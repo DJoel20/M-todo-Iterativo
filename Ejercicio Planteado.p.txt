@@ -1,0 +1,94 @@
+# -*- coding: utf-8 -*-
+"""
+Python 3
+19 / 07 / 2024
+@author: z_tjona
+"""
+
+# ----------------------------- logging --------------------------
+import logging
+from sys import stdout
+from datetime import datetime
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s][%(levelname)s] %(message)s",
+    stream=stdout,
+    datefmt="%m-%d %H:%M:%S",
+)
+logging.info(datetime.now())
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Definir los métodos iterativos
+def gauss_jacobi(
+    *, A: np.array, b: np.array, x0: np.array, tol: float, max_iter: int
+) -> tuple:
+    n = A.shape[0]
+    x = x0.copy()
+    trajectory = [x.copy()]
+
+    for k in range(max_iter):
+        x_new = np.zeros(n)
+        for i in range(n):
+            suma = np.sum(A[i, :i] * x[:i]) + np.sum(A[i, i+1:] * x[i+1:])
+            x_new[i] = (b[i] - suma) / A[i, i]
+
+        if np.linalg.norm(x_new - x, ord=np.inf) < tol:
+            return x_new, trajectory
+
+        x = x_new
+        trajectory.append(x.copy())
+        logging.info(f"Iteración {k}: {x}")
+
+    return x, trajectory
+
+def gauss_seidel(
+    *, A: np.array, b: np.array, x0: np.array, tol: float, max_iter: int
+) -> tuple:
+    n = A.shape[0]
+    x = x0.copy()
+    trajectory = [x.copy()]
+
+    for k in range(max_iter):
+        x_new = x.copy()
+        for i in range(n):
+            suma = np.sum(A[i, :i] * x_new[:i]) + np.sum(A[i, i+1:] * x[i+1:])
+            x_new[i] = (b[i] - suma) / A[i, i]
+
+        if np.linalg.norm(x_new - x, ord=np.inf) < tol:
+            return x_new, trajectory
+
+        x = x_new
+        trajectory.append(x.copy())
+        logging.info(f"Iteración {k}: {x}")
+
+    return x, trajectory
+
+# Función para graficar la trayectoria
+def plot_trajectory(trajectory, solution, method):
+    trajectory = np.array(trajectory)
+    plt.plot(trajectory[:, 0], trajectory[:, 1], marker='o', label=f'{method} trayectoria')
+    plt.plot(solution[0], solution[1], 'ro', label='solución')
+    plt.xlabel('$x_1$')
+    plt.ylabel('$x_2$')
+    plt.legend()
+    plt.grid()
+    plt.title(f'Trayectoria del método {method}')
+    plt.show()
+
+# Definir el sistema de ecuaciones
+A = np.array([[1, 1], [-2, 1]])
+b = np.array([6, 0])
+x0 = np.array([0, 0])
+
+# Gauss-Jacobi
+solution_jacobi, trajectory_jacobi = gauss_jacobi(A=A, b=b, x0=x0, tol=1e-5, max_iter=1000)
+print(f'Solución Gauss-Jacobi: {solution_jacobi}')
+plot_trajectory(trajectory_jacobi, solution_jacobi, 'Gauss-Jacobi')
+
+# Gauss-Seidel
+solution_seidel, trajectory_seidel = gauss_seidel(A=A, b=b, x0=x0, tol=1e-5, max_iter=1000)
+print(f'Solución Gauss-Seidel: {solution_seidel}')
+plot_trajectory(trajectory_seidel, solution_seidel, 'Gauss-Seidel')
