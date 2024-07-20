@@ -1,0 +1,12 @@
+Modificación en iterative_methods.py:
+
+Cambios en gauss_jacobi:
+
+Descripción: Ajustada la manera de almacenar y retornar la trayectoria de iteraciones. Además, se cambió la condición de convergencia para usar la norma infinita y se actualizó el formato de logging.
+Cambios en gauss_seidel:
+
+Descripción: Similar a Gauss-Jacobi, se mejoró la forma de calcular la nueva aproximación y se ajustó la verificación de convergencia usando la norma infinita. También se ajustó el formato de logging.
+
+Modificación en gauss_iterative.ipynb:
+
+Descripción: Se incluyó el código para resolver el sistema de ecuaciones utilizando métodos iterativos y se agregó la función para graficar las trayectorias. Se modificó la estimación inicial y se grafica el resultado.
